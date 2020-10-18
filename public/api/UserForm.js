@@ -18,7 +18,7 @@ class UserForm {
   setLoginErrorMessage(message) {
     this.loginErrorMessageBox.innerText = message;
     this.loginErrorMessageBox.style.display = 'block';
-    setTimeout(() => { this.loginErrorMessageBox.style.display = 'none'; }, 5000);
+    setTimeout(() => { this.loginErrorMessageBox.style.display = 'none'; }, 50000000000);
   }
 
   setRegisterErrorMessage(message) {

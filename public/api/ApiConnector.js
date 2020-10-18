@@ -37,6 +37,7 @@ class ApiConnector {
 
       const result = await ApiConnector.parseResponseBody(response);
       return result;
+
     };
 
     asyncPart()
