@@ -1,25 +1,24 @@
 const logout = new LogoutButton();
-function checkOut(Response) {
-    if (Response.success) {
-        location.reload();
-    } else console.log('ошибка');
-}
 logout.action = () => {
-    ApiConnector.logout(checkOut);
+    ApiConnector.logout((response)=> {
+        if (response.success) {
+            location.reload();
+        } else console.log('ошибка');
+    });
 };
 
-ApiConnector.current(current = (Response) => {
-    if (Response.success){
-        ProfileWidget.showProfile(Response.data);
+ApiConnector.current((response) => {
+    if (response.success){
+        ProfileWidget.showProfile(response.data);
     }
 });
 
 const rates = new RatesBoard;
 function getStockRates(){
-     ApiConnector.getStocks(updateRates= (Response) => {
-         if (Response.success){
+     ApiConnector.getStocks( (response) => {
+         if (response.success){
              rates.clearTable();
-             rates.fillTable(Response.data)
+             rates.fillTable(response.data)
          }
      })
 }
@@ -27,49 +26,48 @@ getStockRates();
 setInterval(getStockRates, 60000);
 
 const manager = new MoneyManager();
-function updateBalance(Response) {
-    if (Response.success){
-        ProfileWidget.showProfile(Response.data);
+function updateBalance(response) {
+    if (response.success){
+        ProfileWidget.showProfile(response.data);
         manager.setMessage(true, `Успешно`);
-    } else manager.setMessage(false, `${Response.error}`);
+    } else manager.setMessage(false, `${response.error}`);
 }
 function add (data){
-    ApiConnector.addMoney({currency: data.currency, amount: data.amount}, updateBalance)
+    ApiConnector.addMoney(data, updateBalance)
 }
 
 manager.addMoneyCallback = add;
 
 function convert(data){
-    ApiConnector.convertMoney({fromCurrency: data.fromCurrency, targetCurrency: data.targetCurrency, fromAmount: data.fromAmount},updateBalance);
+    ApiConnector.convertMoney(data, updateBalance);
 }
 manager.conversionMoneyCallback = convert;
 
 function send(data) {
-    ApiConnector.transferMoney({to: data.to, currency: data.currency, amount: data.amount}, updateBalance);
+    ApiConnector.transferMoney(data, updateBalance);
 }
 
 manager.sendMoneyCallback = send;
 
 const favourite = new FavoritesWidget();
-updateFavourites = (Response) =>{
-    if (Response.success){
+updateFavourites = (response) =>{
+    if (response.success){
         favourite.clearTable();
-        favourite.fillTable(Response.data);
-        manager.updateUsersList(Response.data);
+        favourite.fillTable(response.data);
+        manager.updateUsersList(response.data);
         favourite.setMessage(true, "Успешно")
-    } else favourite.setMessage(false, `${Response.error}`)
+    } else favourite.setMessage(false, `${response.error}`)
 }
-function get(data) {
+function get() {
     ApiConnector.getFavorites(updateFavourites);
 }
 get();
 function addFavour(data) {
-    ApiConnector.addUserToFavorites({id: data.id, name: data.name}, updateFavourites);
+    ApiConnector.addUserToFavorites(data, updateFavourites);
 }
 favourite.addUserCallback = addFavour;
 
 function removeFavour(data){
-    console.log(data.id);
     ApiConnector.removeUserFromFavorites(data, updateFavourites);
 }
 favourite.removeUserCallback = removeFavour;
